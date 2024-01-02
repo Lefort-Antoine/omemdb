@@ -76,12 +76,6 @@ class RefField(fields.String):
 
         return value
 
-
-class Tuple(fields.List):
-    def _deserialize(self, value, attr, data):
-        return tuple(super()._deserialize(value, attr, data))
-
-
 class NumpyArray(fields.Field):
     default_error_messages = {
         "invalid_numpy_array": "Is not a numpy array.",
@@ -213,11 +207,11 @@ class DateTime(fields.DateTime):
         return super()._serialize(value, attr, obj)
 
 
-class LocalDateTime(fields.LocalDateTime):
-    def _deserialize(self, value, attr, data):
-        if isinstance(value, dt.datetime):
-            return value
-        return super()._deserialize(value, attr, data)
+# class LocalDateTime(fields.LocalDateTime):
+#     def _deserialize(self, value, attr, data):
+#         if isinstance(value, dt.datetime):
+#             return value
+#         return super()._deserialize(value, attr, data)
 
 
 class TimeDelta(fields.TimeDelta):

@@ -1,5 +1,6 @@
 from .oerrors_omemdb import OExceptionCollection, get_instance
-from marshmallow import UnmarshalResult
+# from marshmallow import UnmarshalResult
+from collections import OrderedDict
 
 
 class DynamicFieldsSchemaMixin:
@@ -24,11 +25,15 @@ class DynamicFieldsSchemaMixin:
     def load(self, data, many=None, partial=None, skip_validation=False):
         # prepare record error message instance (we wan't this instance to be the same as in
         result = super().load(data, many=many, partial=partial, skip_validation=skip_validation)
-        if not result.errors:
-            ret = self.validate_dynamic_fields(result.data, data, skip_validation=skip_validation)
+        if not result["errors"]:
+            ret = dict(
+                data=self.validate_dynamic_fields(result["data"], data, skip_validation=skip_validation),
+                errors= OrderedDict()
+            )
         else:
-            ret = result.data
-        return UnmarshalResult(ret, result.errors)
+            ret = result
+        return ret
+        # return UnmarshalResult(ret, result.errors)
 
     def validate_dynamic_fields(self, validated_data, initial_data, skip_validation=False):
         """

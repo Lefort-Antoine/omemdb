@@ -517,7 +517,7 @@ class Record:
         may be subclassed to define other styles (for example for more detail)
         !! if subclassed, style=None must behave as if was not subclassed !!
         """
-        return collections.OrderedDict(self.get_schema().dump(self.to_dict(raw_links=True)).data.items())
+        return collections.OrderedDict(self.get_schema().dump(self.to_dict(raw_links=True)).items())
 
     # ------------------------------------------- custom user actions --------------------------------------------------
     def _pre_delete(self, **kwargs):

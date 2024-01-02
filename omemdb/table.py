@@ -106,10 +106,11 @@ class Table:
                 raise TableDefinitionError(self._ref, "'{name}' is a reserved field name, can't use it")
 
             # check value
-            if isinstance(descriptor, fields.Tuple):  # manage tuples
-                self._check_mono_field(descriptor.container)
-            else:
-                self._check_mono_field(descriptor)
+            # if isinstance(descriptor, fields.Tuple):  # manage tuples
+            #     self._check_mono_field(descriptor.container)
+            #     fields.List
+            # else:
+            self._check_mono_field(descriptor)
 
         # CHECK TABLE META
 
@@ -224,7 +225,7 @@ class Table:
 
     def _check_mono_field(self, field):
         # check authorized type
-        if isinstance(field, (fields.Nested, fields.List, fields.Dict)):
+        if isinstance(field, (fields.Nested, fields.List, fields.Dict, fields.Tuple)):
             raise RuntimeError(f"table: {self.get_ref()}: non supported fields: {type(field)}")
         # check link
         if isinstance(field, LinkField) and not hasattr(self._db, field.target_table_ref):

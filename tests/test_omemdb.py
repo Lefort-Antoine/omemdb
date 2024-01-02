@@ -29,7 +29,7 @@ def building_standard_populate():
                 ref=f"s{z_i}{s_i}",
                 major_zone=f"z{z_i}",
                 minor_zone=None if s_i == 2 else f"z{s_i+1}",
-                constructions=[f"c{c_i}" for c_i in range(3)]
+                # constructions=[f"c{c_i}" for c_i in range(3)]
             )
 
     return db

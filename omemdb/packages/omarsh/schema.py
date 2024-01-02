@@ -1,30 +1,37 @@
 from marshmallow.exceptions import ValidationError
 from marshmallow.decorators import PRE_LOAD, POST_LOAD
-from marshmallow import Schema as BaseSchema, UnmarshalResult, marshalling
-from .no_validation_unmarshaller import NoValidationUnmarshaller
-# fixme: [GL] document that, if Meta is subclassed, don't forget to maintain ordered = True
+from marshmallow import Schema as BaseSchema
+from collections import OrderedDict
 
 
 class Schema(BaseSchema):
     def add_field(self, key, value, last=True):
         self.declared_fields.update({key: value})
-        self.declared_fields.move_to_end(key, last=last)
-        self._update_fields(many=self.many)
+        # self.declared_fields.move_to_end(key, last=last)
+        # self._update_fields(many=self.many)
 
     class Meta:
         ordered = True
 
     def load(self, data, many=None, partial=None, skip_validation=False):
-        if skip_validation:
-            result, errors = self._do_load_no_validate(data, many, partial=partial, postprocess=True)
-        else:
-            result, errors = self._do_load(data, many, partial=partial, postprocess=True)
-        return UnmarshalResult(data=result, errors=errors)
+        errors = {}
+        result = OrderedDict()
+        try:
+            if skip_validation:
+                result = self._do_load_no_validate(data, many, partial=partial, postprocess=True)
+            else:
+                result = self._do_load(data, many=many, partial=partial, postprocess=True)
+
+        except ValidationError as err:
+            errors = err.messages
+            valid_data = err.valid_data
+
+        return dict(data=result, errors=errors)
 
     # fixme: see if we want to de-activate pre-load and post-load ?
     def _do_load_no_validate(self, data, many, partial=None, postprocess=True):
         # Callable unmarshalling object
-        unmarshal = NoValidationUnmarshaller()
+        # unmarshal = NoValidationUnmarshaller()
         errors = {}
         many = self.many if many is None else bool(many)
         if partial is None:
