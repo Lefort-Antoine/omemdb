@@ -1,6 +1,8 @@
 import unittest
 
 from tests.app_nested_fields import BookDb
+# https://marshmallow.readthedocs.io/en/stable/nesting.html
+
 class TestNewFields(unittest.TestCase):
     def test_nested(self):
         db = BookDb()
