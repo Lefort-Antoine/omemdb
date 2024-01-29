@@ -3,15 +3,17 @@ from typing import Iterable
 import os
 import logging
 import importlib
+from itertools import groupby
+from operator import itemgetter
 
 from . import CONF
 from .util import json_load, json_dump
 from .packages.oversion import Version
 from .oerrors_omemdb import OExceptionCollection, MissingVersionKey, MissingTableKey, VersionIsTooHigh, \
-    VersionIsTooLowAutoMigrateIsOff, OmemdbMarshValidator
+    VersionIsTooLowAutoMigrateIsOff, OmemdbMarshValidator, get_instance
 
 from .table import Table
-from .util import json_data_to_json, camel_to_lower
+from .util import json_data_to_json, camel_to_lower, from_instance
 from .relations_manager import RelationsManager
 
 logger = logging.getLogger(__name__)
@@ -312,3 +314,102 @@ class Db:
         copies data and returns a new database
         """
         return self.__class__(json_data=self.to_json_data(), skip_validation=True)
+
+
+    def to_flat_json(self, buffer_or_path=None, indent=2) :#, multi_files=False):
+        # check dir path
+        assert isinstance(buffer_or_path, str), "buffer_or_path must provide dir path in multi_file mode"
+
+        # make dir if needed
+        if not os.path.isdir(buffer_or_path):
+            os.mkdir(buffer_or_path)
+
+        # dump version
+        with open(os.path.join(buffer_or_path, "__admin__.json"), "w", encoding=CONF.encoding) as f:
+            json_dump({"__version__": self.version}, f)
+
+        d = self.to_flat_json_data()
+        with open(os.path.join(buffer_or_path), "w", encoding=CONF.encoding) as f:
+            json_dump(d, f)
+
+    def to_flat_json_data(self):
+        fdata = {}
+        d = self.to_json_data()
+        for table_ref, record_list in d.items():
+            if record_list is not None:
+                try:
+                    for rparams_list in record_list:
+                        for k, v in rparams_list.items():
+                            fdata[get_instance(
+                                table_ref,
+                                rparams_list.get("ref"),
+                                k
+                            )] = v if v is not None else ""
+                except AttributeError: # for vertex
+                    fdata[get_instance(table_ref)] = record_list
+
+        return fdata
+
+    @classmethod
+    def from_flat_json_data(cls, buffer_or_path,  auto_migrate=True, skip_validation=False):
+        # transform to buffer if is path
+        is_path = False
+        if isinstance(buffer_or_path, str):
+            if os.path.isfile(buffer_or_path):  # is path
+                is_path = True
+                buffer_or_path = open(buffer_or_path, encoding=CONF.encoding)
+            else:
+                raise FileNotFoundError(f"no such file: {buffer_or_path}")
+
+        # load content
+        try:
+            json_data = json_load(buffer_or_path)
+        finally:
+            # close buffer if is path
+            if is_path:
+                buffer_or_path.close()
+
+        # add keys instance in data list
+        instance_data_list = []
+        for instance,value in json_data.items():
+            data_ = from_instance(instance)
+            data_["field_value"] = value if value != "" else None
+            instance_data_list.append(data_)
+
+        # create data_dict
+        d = collections.OrderedDict()
+
+        ## loop table
+        for table_ref, record_attr_gpe in groupby(
+                instance_data_list,
+                key=itemgetter('table_ref')
+        ):
+            table_l = []
+            ## loop records
+            try:
+                for cols, record_attr in groupby(
+                        record_attr_gpe,
+                        key=itemgetter('record_id')
+                ):
+                    record_d = collections.OrderedDict()
+                    for attr in record_attr:
+                        print(attr)
+                        record_d[attr["field_name"]] = attr["field_value"]
+                    table_l.append(record_d)
+
+                d.update({table_ref: table_l})
+            except KeyError: # specific for vertex
+                values = []
+                for record in filter(lambda data: data["table_ref"] == table_ref, instance_data_list):
+                    values.extend(record["field_value"])
+                d.update({table_ref: values})
+
+        # add empty table
+        for table_ref in cls.get_table_refs():
+            if table_ref not in d:
+                d[table_ref] = collections.OrderedDict()
+        d["__version__"] = cls.version
+        d.move_to_end("__version__", last=False)
+
+        return cls(json_data=d, auto_migrate=auto_migrate, skip_validation=skip_validation)
+

@@ -89,3 +89,7 @@ def frame_to_json_data(frame, orient="split", date_unit="ms", date_format="iso")
     # convert to json data (sort to prevent random order...)
     return collections.OrderedDict(sorted(json_loads(json_str).items()))
 
+
+def from_instance(name):
+    keys = ["table_ref", "record_id", "field_name", "sub_field_name"]
+    return { keys[kindex]:value for kindex,value in enumerate(name.split("/")[1:])}

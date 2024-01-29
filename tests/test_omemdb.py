@@ -277,6 +277,12 @@ class OmemdbTest(unittest.TestCase):
             db2 = AppBuildingDb.from_json(multi_path)
             self.assertEqual(db, db2)
 
+            # [ALE]
+            mono_flat = os.path.join(dir_path, "mono_flat.json")
+            db.to_flat_json(mono_flat)
+            db3 = AppBuildingDb.from_flat_json_data(mono_flat)
+            self.assertEqual(db, db3)
+
     def test_dynamic_id(self):
 
         db1 = AppDynamicId()
@@ -291,8 +297,13 @@ class OmemdbTest(unittest.TestCase):
         db2.dynamic_id.add(base="b1", weak_ref="dpk")
         db2.dynamic_id.add(base="b1", weak_ref="dpk")
 
+        self.assertEqual(db2.dynamic_id.one().id, 'b1/dpk')
         self.assertDictEqual(db1.to_json_data(), db2.to_json_data())
         self.assertEqual(db1, db2)
+
+        # [ALE]
+        self.assertDictEqual(db1.to_flat_json_data(), db2.to_flat_json_data())
+
 
     def test_rename(self):
         db = building_standard_populate()
