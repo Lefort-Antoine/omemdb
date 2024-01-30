@@ -14,7 +14,6 @@ class RefFieldRecord(Record):
     class TableMeta:
         pass
 
-# Why is this exactly the same?
 class RefFieldRecord2(Record):
     class Schema(Schema):
         ref = fields.RefField(required=True)
@@ -25,8 +24,9 @@ class RefFieldRecord2(Record):
 class CustomFieldsRecord(Record):
     class Schema(Schema):
         pk = fields.RefField(required=True)
-        fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
-        fields.Tuple((fields.Nested(RefFieldRecord), fields.Nested(RefFieldRecord2)), allow_none=False, load_default=None)
+        tuple_of_int = fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
+        tuple_of_nested = fields.Tuple((fields.Nested(RefFieldRecord.Schema), fields.Nested(RefFieldRecord2.Schema)), allow_none=False, load_default=None)
+        # list_of_type = fields.List(RefFieldRecord.Schema, allow_none=False, load_default=None)
 
         # TODO: finish this and add into JSON export
         # https://github.com/lovasoa/marshmallow_dataclass/issues/119

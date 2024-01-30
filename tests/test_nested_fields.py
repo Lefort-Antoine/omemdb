@@ -7,10 +7,12 @@ class TestNewFields(unittest.TestCase):
     def test_nested(self):
         db = BookDb()
         db.user.add(
+            pk="1",
             name="MrX",
             email="joe@dot.com",
         )
         db.blog.add(
+            pk="1",
             title="Something Completely Different",
             author=db.user.one(),
         )
