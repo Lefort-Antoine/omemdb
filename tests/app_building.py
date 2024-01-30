@@ -29,7 +29,7 @@ class Surface(Record):
         ref = fields.String(required=True)
         major_zone = LinkField("Zone", required=True)
         minor_zone = LinkField("Zone", missing=None)
-        # constructions = TupleLinkField("Construction", missing=())
+        constructions = TupleLinkField("Construction", missing=())
 
     def _post_save(self, **kwargs):
         self._post_save_counter += 1
