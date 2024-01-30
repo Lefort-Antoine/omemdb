@@ -2,8 +2,8 @@
 
  ## use marshmallow docs
 
- we are using marshmallow v2.x
- docs: https://marshmallow.readthedocs.io/en/2.x-line/
+we are using marshmallow v3.x docs:
+https://marshmallow.readthedocs.io/en/stable/examples.html
 
  ## imports
 
