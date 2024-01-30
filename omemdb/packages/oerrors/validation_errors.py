@@ -94,10 +94,6 @@ class InvalidEmail(ValidationError):
     description = "Invalid email."
 
 
-class InvalidFormattedString(ValidationError):
-    description = "Cannot format string with given data."
-
-
 class InvalidImage(ValidationError):
     description = "Invalid image."
 

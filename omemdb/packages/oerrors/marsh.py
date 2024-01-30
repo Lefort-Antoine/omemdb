@@ -114,9 +114,6 @@ _marsh_message_to_oexception_cls = {
     # Boolean
     fields.Boolean.default_error_messages["invalid"]: validation_errors.InvalidBoolean,  # "Not a valid boolean.",
 
-    # FormattedString
-    # fields.FormattedString.default_error_messages["format"]: validation_errors.InvalidFormattedString,  # "Cannot format string with given data.",
-
     # DateTime
     fields.DateTime.default_error_messages["invalid"]: validation_errors.InvalidDatetime,  # "Not a valid datetime.",
     fields.DateTime.default_error_messages["format"]: validation_errors.InvalidDatetime,  # "'{input}' cannot be formatted as a datetime.",
