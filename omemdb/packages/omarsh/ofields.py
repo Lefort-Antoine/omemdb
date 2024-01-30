@@ -68,11 +68,11 @@ class RefField(fields.String):
     def _deserialize(self, value, attr, data):
         value = super()._deserialize(value, attr, data).lower()
         if (value is None) or (self.pattern.fullmatch(value) is None):
-            self.fail("invalid_ref")
+            raise self.make_error("invalid_ref")
         if len(value) == 0:
-            self.fail("too_short")
+            raise self.make_error("too_short")
         if self.max_length is not None and len(value) > self.max_length:
-            self.fail("too_long")
+            raise self.make_error("too_long")
 
         return value
 
@@ -90,8 +90,8 @@ class NumpyArray(fields.Field):
         if not isinstance(value, np.ndarray):
             try:
                 value = np.array(value)
-            except (ValueError, AttributeError):
-                self.fail("invalid_numpy_array")
+            except (ValueError, AttributeError) as error:
+                raise self.make_error("invalid_numpy_array") from error
 
         # freeze
         value.flags.writeable = False
@@ -137,11 +137,11 @@ class TimeSeries(fields.Field):
         if not isinstance(value, pd.Series):
             # check dict
             if not isinstance(value, dict):
-                self.fail("invalid_series")
+                raise self.make_error("invalid_series")
 
             # check keys
             if len({"data", "index", "name"}.intersection(value.keys())) != 3:
-                self.fail("invalid_series")
+                raise self.make_error("invalid_series")
 
             # parse index
             if self._date_format == "iso":
@@ -153,18 +153,18 @@ class TimeSeries(fields.Field):
 
             try:
                 index = list(map(lambda x: x if isinstance(x, dt.datetime) else parse_fct(x), value["index"]))
-            except ValueError:
-                self.fail("invalid_time_index")
+            except ValueError as error:
+                raise self.make_error("invalid_time_index") from error
 
             # make a series
             try:
                 value = pd.Series(data=value["data"], index=index, name=value["name"], dtype=self._dtype)
-            except (ValueError, KeyError):
-                self.fail("invalid_series")
+            except (ValueError, KeyError) as error:
+                raise self.make_error("invalid_series") from error
 
         # check if time series
         if len(value) > 0 and not isinstance(value.index, pd.DatetimeIndex):
-            self.fail("invalid_time_index")
+            raise self.make_error("invalid_time_index")
 
         # make generic if needed
         if self._generic:
