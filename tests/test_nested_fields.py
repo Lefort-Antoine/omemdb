@@ -8,9 +8,10 @@ class TestNewFields(unittest.TestCase):
         db = BookDb()
         db.user.add(
             name="MrX",
-            email="dot.com",
+            email="joe@dot.com",
         )
         db.blog.add(
-            title="Something Completely Different", author=db.user.one()
+            title="Something Completely Different",
+            author=db.user.one(),
         )
         self.assertEqual(db.blog.one().author.name, db.user.one().name)

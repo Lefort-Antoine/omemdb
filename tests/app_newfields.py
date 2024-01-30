@@ -24,7 +24,7 @@ class RefFieldRecord2(Record):
 
 class CustomFieldsRecord(Record):
     class Schema(Schema):
-        fields.RefField(required=True)
+        pk = fields.RefField(required=True)
         fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
         fields.Tuple((fields.Nested(RefFieldRecord), fields.Nested(RefFieldRecord2)), allow_none=False, load_default=None)
 

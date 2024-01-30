@@ -225,7 +225,7 @@ class Table:
 
     def _check_mono_field(self, field):
         # check authorized type
-        if isinstance(field, (fields.Nested, fields.List, fields.Dict)):
+        if isinstance(field, (fields.List, fields.Dict)):
         # if isinstance(field, (fields.Nested, fields.List, fields.Dict, fields.Tuple)):
             raise RuntimeError(f"table: {self.get_ref()}: non supported fields: {type(field)}")
         # check link
