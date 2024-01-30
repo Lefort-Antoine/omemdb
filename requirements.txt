@@ -1,6 +1,8 @@
 # conda
 numpy>=1.14.2,<2.0
 pandas>=2.1.0,<3.0
+# panda new dependency
+pyarrow==15.0.0
 
 # conda-forge
 marshmallow>=3.20.1,<4.0.0
