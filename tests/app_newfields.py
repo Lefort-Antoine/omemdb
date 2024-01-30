@@ -7,18 +7,6 @@ class dotdict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-class CustomFieldsRecord(Record):
-    class Schema(Schema):
-        pk = fields.RefField(required=True)
-        tuple = fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
-        tuple_link = TupleLinkField(("RefFieldRecord", "RefFieldRecord2"), allow_none=True, load_default=None)
-        augmented_field = fields.String(
-            description="This is a decription of the field.",
-            metadata=dict(unit="m2")
-        )
-    class TableMeta:
-        pass
-
 class RefFieldRecord(Record):
     class Schema(Schema):
         ref = fields.RefField(required=True)
@@ -26,11 +14,25 @@ class RefFieldRecord(Record):
     class TableMeta:
         pass
 
-
+# Why is this exactly the same?
 class RefFieldRecord2(Record):
     class Schema(Schema):
         ref = fields.RefField(required=True)
 
+    class TableMeta:
+        pass
+
+class CustomFieldsRecord(Record):
+    class Schema(Schema):
+        fields.RefField(required=True)
+        fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
+        fields.Tuple((fields.Nested(RefFieldRecord), fields.Nested(RefFieldRecord2)), allow_none=False, load_default=None)
+
+        # TODO: finish this and add into JSON export
+        # https://github.com/lovasoa/marshmallow_dataclass/issues/119
+        augmented_field = fields.String(
+            metadata=dict(unit="m2", description="This is a decription of the field.",)
+        )
     class TableMeta:
         pass
 

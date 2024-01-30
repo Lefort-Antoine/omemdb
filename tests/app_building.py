@@ -1,5 +1,5 @@
 from omemdb.packages.omarsh import Schema, fields
-from omemdb import Record, Db, LinkField, TupleLinkField
+from omemdb import Record, Db, LinkField
 
 
 class Zone(Record):
@@ -21,6 +21,15 @@ class Zone(Record):
             else:
                 s.minor_zone = None
 
+class Construction(Record):
+    class Schema(Schema):
+        ref = fields.String(required=True)
+
+    @property
+    def surfaces(self):
+        return self.get_pointed_records().select(lambda x: self in x.constructions)
+
+
 
 class Surface(Record):
     _post_save_counter = 0
@@ -29,19 +38,10 @@ class Surface(Record):
         ref = fields.String(required=True)
         major_zone = LinkField("Zone", required=True)
         minor_zone = LinkField("Zone", missing=None)
-        # constructions = TupleLinkField("Construction", missing=())
+        constructions = fields.Tuple((fields.Nested(Construction),), missing=())
 
     def _post_save(self, **kwargs):
         self._post_save_counter += 1
-
-
-class Construction(Record):
-    class Schema(Schema):
-        ref = fields.String(required=True)
-
-    @property
-    def surfaces(self):
-        return self.get_pointed_records().select(lambda x: self in x.constructions)
 
 
 def _increment(cls):
