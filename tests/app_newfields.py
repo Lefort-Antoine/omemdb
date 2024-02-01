@@ -1,4 +1,4 @@
-from omemdb.packages.omarsh import Schema, fields
+from omemdb.packages.omarsh import Schema as MarshSchema, fields
 from omemdb import Record, Db, TupleLinkField
 
 class dotdict(dict):
@@ -8,21 +8,21 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 class RefFieldRecord(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.RefField(required=True)
 
     class TableMeta:
         pass
 
 class RefFieldRecord2(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.RefField(required=True)
 
     class TableMeta:
         pass
 
 class CustomFieldsRecord(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         pk = fields.RefField(required=True)
         tuple_of_int = fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
         tuple_of_nested = fields.Tuple((fields.Nested(RefFieldRecord.Schema), fields.Nested(RefFieldRecord2.Schema)), allow_none=False, load_default=None)

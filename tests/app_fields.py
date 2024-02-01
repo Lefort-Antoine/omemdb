@@ -1,9 +1,9 @@
-from omemdb.packages.omarsh import Schema, fields
+from omemdb.packages.omarsh import Schema as MarshSchema, fields
 from omemdb import Record, Db
 
 
 class CustomFieldsRecord(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         pk = fields.Int(required=True)
         date_time = fields.DateTime(allow_none=True, missing=None)
         date = fields.Date(allow_none=True, missing=None)
@@ -16,7 +16,7 @@ class CustomFieldsRecord(Record):
 
 
 class RefFieldRecord(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.RefField(required=True)
 
     class TableMeta:
@@ -29,7 +29,7 @@ class AllowNoneFieldRecord(Record):
     Set this to True if None should be considered a valid value during validation/deserialization.
     If missing=None and allow_none is unset, will default to True. Otherwise, the default is False.
     """
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.RefField(required=True)
         can_be_none = fields.Int(allow_none=True, missing=None)
         cant_be_none = fields.Int(allow_none=False, missing=0)
