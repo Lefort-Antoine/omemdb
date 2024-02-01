@@ -225,12 +225,13 @@ class Table:
 
     def _check_mono_field(self, field):
         # check authorized type
-        if isinstance(field, (fields.List, fields.Dict)):
-        # if isinstance(field, (fields.Nested, fields.List, fields.Dict, fields.Tuple)):
-            raise RuntimeError(f"table: {self.get_ref()}: non supported fields: {type(field)}")
+        # if isinstance(field, (fields.Dict)):
+        # # if isinstance(field, (fields.Nested, fields.List, fields.Dict, fields.Tuple)):
+        #     raise RuntimeError(f"table: {self.get_ref()}: non supported fields: {type(field)}")
         # check link
-        if isinstance(field, LinkField) and not hasattr(self._db, field.target_table_ref):
-            raise RuntimeError(f"table {self._ref}: unknown target_table of given link ({field.target_table_ref})")
+        # if isinstance(field, LinkField) and not hasattr(self._db, field.target_table_ref):
+        #     raise RuntimeError(f"table {self._ref}: unknown target_table of given link ({field.target_table_ref})")
+        pass
 
     # -------------------------------------------- dev api -------------------------------------------------------------
     def _dev_add_inert(self, records_data, skip_validation=False):
