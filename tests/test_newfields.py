@@ -15,22 +15,24 @@ class TestNewFields(unittest.TestCase):
             ref="2",
         )
 
-        rec2 = 2
-
-
-        db.custom_fields_record.add(
+        custom = db.custom_fields_record.add(
             pk="0",
             tuple_of_int=(1,2,3),
-            # FIXME
-            # tuple_of_nested=(rec1, rec2),
-            # tuple_of_nested=(dict(ref="1"), dict(ref="2")),
-            # list_of_type=(rec1, rec1_bis, rec1),
+            tuple_of_nested=(rec1, rec2),
+            list_of_type=[rec1, rec1_bis, rec1],
             dict_of_nested={
                 "test": rec1,
                 "test2": rec1_bis,
             },
             augmented_field="my augmented field"
         )
+
+
+        self.assertEqual(custom.tuple_of_int, (1,2,3))
+        self.assertEqual(custom.tuple_of_nested, (rec1, rec2))
+        self.assertEqual(custom.list_of_type, [rec1, rec1_bis, rec1])
+        self.assertEqual(custom.dict_of_nested, dict_of_nested={ "test": rec1, "test2": rec1_bis, })
+
         # save and load "augmented field" in/to json data
 
 

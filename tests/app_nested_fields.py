@@ -1,5 +1,5 @@
 from omemdb.packages.omarsh import Schema as MarshSchema, fields
-from omemdb import Record, Db, TupleLinkField
+from omemdb import Record, Db
 
 # https://marshmallow.readthedocs.io/en/stable/nesting.html
 
@@ -14,7 +14,7 @@ class Blog(Record):
     class Schema(MarshSchema):
         pk = fields.RefField(required=True)
         title = fields.String(required=True)
-        author = fields.Nested(User.Schema(), load_default=None, allow_none=True)
+        author = fields.Nested(User.Schema(), required=True)
 
 class BookDb(Db):
     models = [
