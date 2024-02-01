@@ -1,6 +1,7 @@
+import typing
 from marshmallow.exceptions import ValidationError
 from marshmallow.decorators import PRE_LOAD, POST_LOAD
-from marshmallow import Schema as BaseSchema
+from marshmallow import Schema as BaseSchema, types
 from collections import OrderedDict
 
 
@@ -10,22 +11,35 @@ class Schema(BaseSchema):
         # self.declared_fields.move_to_end(key, last=last)
         # self._update_fields(many=self.many)
 
-    class Meta:
-        ordered = True
+    # class Meta:
+    #     ordered = True
 
-    def load(self, data, many=None, partial=None, skip_validation=False):
+    def load(
+        self,
+        data: (
+            typing.Mapping[str, typing.Any]
+            | typing.Iterable[typing.Mapping[str, typing.Any]]
+        ),
+        many: bool | None = None,
+        partial: bool | types.StrSequenceOrSet | None = None,
+        unknown: str | None = None,
+        skip_validation: bool = False,
+    ):
         errors = {}
         result = OrderedDict()
         try:
             if skip_validation:
+                # FIXME: seems dangerous and hard to maintain. Why not a dedicated method then?
                 result = self._do_load_no_validate(data, many, partial=partial, postprocess=True)
             else:
-                result = self._do_load(data, many=many, partial=partial, postprocess=True)
+                result = self._do_load(data, many=many, partial=partial, unknown=unknown, postprocess=True)
 
         except ValidationError as err:
             errors = err.messages
             valid_data = err.valid_data
 
+        # TODO: why do we change the format? This could be problematic to change marshmallow native format
+        # errors should probably rethrown and caught on higher level with a try block
         return dict(data=result, errors=errors)
 
     # fixme: see if we want to de-activate pre-load and post-load ?
