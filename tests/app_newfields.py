@@ -24,14 +24,38 @@ class RefFieldRecord2(Record):
 class CustomFieldsRecord(Record):
     class Schema(MarshSchema):
         pk = fields.RefField(required=True)
-        tuple_of_int = fields.Tuple((fields.Integer(),fields.Integer(),fields.Integer()), allow_none=True, load_default=None)
-        tuple_of_nested = fields.Tuple((fields.Nested(RefFieldRecord.Schema), fields.Nested(RefFieldRecord2.Schema)), allow_none=False, load_default=None)
-        # list_of_type = fields.List(RefFieldRecord.Schema, allow_none=False, load_default=None)
+        tuple_of_int = fields.Tuple(
+            (fields.Integer(), fields.Integer(), fields.Integer()),
+            required=True,
+        )
+        # FIXME: does not work if specified, works with None as default
+        tuple_of_nested = fields.Tuple(
+            (
+                fields.Nested(RefFieldRecord.Schema()),
+                fields.Nested(RefFieldRecord2.Schema()),
+            ),
+            required=False,
+            load_default=None,
+        )
+        list_of_type = fields.List(
+            fields.Nested(RefFieldRecord.Schema()), allow_none=True, load_default=None
+        )
+        dict_of_nested = fields.Dict(
+            keys=fields.Str(),
+            values=fields.Nested(RefFieldRecord.Schema()),
+            allow_none=True,
+            load_default=None,
+        )
 
         # TODO: finish this and add into JSON export
         # https://github.com/lovasoa/marshmallow_dataclass/issues/119
         augmented_field = fields.String(
-            metadata=dict(unit="m2", description="This is a decription of the field.",)
+            metadata=dict(
+                unit="m2",
+                description="This is a decription of the field.",
+            ),
+            allow_none=True,
+            load_default=None,
         )
     class TableMeta:
         pass

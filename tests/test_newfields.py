@@ -6,20 +6,29 @@ class TestNewFields(unittest.TestCase):
         db = AppNewFields()
 
         rec1 = db.ref_field_record.add(
-            ref="Rec1",
+            ref="1",
         )
-        # rec1_bis = db.ref_field_record.add(
-        #     ref="Rec1_bis",
-        # )
-        rec2 = db.ref_field_record.add(
-            ref="Rec2",
+        rec1_bis = db.ref_field_record.add(
+            ref="Rec1_bis",
+        )
+        rec2 = db.ref_field_record2.add(
+            ref="2",
         )
 
+        rec2 = 2
+
+
         db.custom_fields_record.add(
-            pk=0,
+            pk="0",
             tuple_of_int=(1,2,3),
-            tuple_of_nested=(rec1, rec2),
-            # list_of_type=(rec1, rec1_bis ),
+            # FIXME
+            # tuple_of_nested=(rec1, rec2),
+            # tuple_of_nested=(dict(ref="1"), dict(ref="2")),
+            # list_of_type=(rec1, rec1_bis, rec1),
+            dict_of_nested={
+                "test": rec1,
+                "test2": rec1_bis,
+            },
             augmented_field="my augmented field"
         )
         # save and load "augmented field" in/to json data
