@@ -17,5 +17,6 @@ class OmemdbMarshValidator(_MarshValidator):
 
 _marsh_message_to_oexception = {
     # Link
+    # TODO: remove me?
     LinkField.default_error_messages["invalid_link"]: InvalidLink
 }

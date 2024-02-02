@@ -2,6 +2,8 @@ import inspect
 import itertools
 import json
 
+from marshmallow.exceptions import ValidationError
+from collections import OrderedDict
 from omemdb.packages.omarsh import Schema, fields, ValidationError as OMarshValidationError, validate
 from omemdb.packages.omarsh.no_validation_unmarshaller import deserialize_field
 
@@ -28,8 +30,12 @@ class MarshValidator:
     def validate(self, data_or_value, skip_validation=False):
         # load
         if self.schema is not None:
-            result = self.schema.load(data_or_value, skip_validation=skip_validation)
-            data, errors = result['data'], result['errors']
+            errors = {}
+            data = OrderedDict()
+            try:
+                data = self.schema.load(data_or_value)
+            except ValidationError as err:
+                errors = err.messages
         else:
             try:
                 data, errors = deserialize_field(
