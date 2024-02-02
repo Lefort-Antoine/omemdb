@@ -1,9 +1,9 @@
-from omemdb.packages.omarsh import Schema, fields
+from omemdb.packages.omarsh import Schema as MarshSchema, fields
 from omemdb import Record, Db, LinkField
 
 
 class Zone(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.String(required=True)
 
     @property
@@ -22,7 +22,7 @@ class Zone(Record):
                 s.minor_zone = None
 
 class Construction(Record):
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.String(required=True)
 
     @property
@@ -34,7 +34,7 @@ class Construction(Record):
 class Surface(Record):
     _post_save_counter = 0
 
-    class Schema(Schema):
+    class Schema(MarshSchema):
         ref = fields.String(required=True)
         major_zone = LinkField("Zone", required=True)
         minor_zone = LinkField("Zone", missing=None)
@@ -53,7 +53,7 @@ def _increment(cls):
 class Vertex(Record):
     last_pk = 0
 
-    class Schema(Schema):
+    class Schema(MarshSchema):
         pk = fields.Int(required=True)
         x = fields.Integer(required=True)
         y = fields.Integer(required=True)

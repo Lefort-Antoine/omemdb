@@ -12,6 +12,7 @@ from .packages.oversion import Version
 from .oerrors_omemdb import OExceptionCollection, MissingVersionKey, MissingTableKey, VersionIsTooHigh, \
     VersionIsTooLowAutoMigrateIsOff, OmemdbMarshValidator, get_instance
 
+from . import Record
 from .table import Table
 from .util import json_data_to_json, camel_to_lower, from_instance
 from .relations_manager import RelationsManager
@@ -30,7 +31,7 @@ class Db:
     # --------------------------------------------- to subclass --------------------------------------------------------
     version = None  # to subclass (optional)
     migration_dir = None  # to subclassed, for example: ".".join(__name__.split(".")[:-1] + ["migrations"])
-    models = None  # to subclass
+    models: list[Record] | None = None  # to subclass
     marsh_validator_cls = OmemdbMarshValidator  # to subclass
 
     @classmethod
