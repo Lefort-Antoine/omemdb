@@ -1,3 +1,5 @@
+from typing import Any
+
 from openpyxl import Workbook
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.utils import get_column_letter
@@ -12,12 +14,12 @@ dropdown_fill = PatternFill(start_color="CCFF99", fill_type="solid")
 def generate_input_form(db: Db, path):
     # retrieve data
     db_d = dict()
-    for table in db:
-        table_d = dict()
+    for table in db.__iter__():
+        table_d: dict[str, Any] = dict()
         db_d[table.get_ref()] = table_d
         schema = table._dev_schema
         for k, v in schema.declared_fields.items():
-            field_d = dict()
+            field_d: dict[str, Any] = dict()
             table_d[k] = field_d
             choices = None
             if getattr(v, "validate", None) is not None and isinstance(v.validate, validate.OneOf):
@@ -25,7 +27,7 @@ def generate_input_form(db: Db, path):
             field_d["choices"] = choices
 
     wb = Workbook()
-    wb.remove_sheet(wb.active)  # remove default sheet
+    wb.remove(wb.active)  # remove default sheet
 
     # choices worksheet
     ws = wb.create_sheet("choices")
