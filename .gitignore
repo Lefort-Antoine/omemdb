@@ -130,3 +130,6 @@ ENV/
 
 # openergy
 /_gitignore/
+
+# linters
+mypy.ini
