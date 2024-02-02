@@ -24,16 +24,11 @@ class DynamicFieldsSchemaMixin:
 
     def load(self, data, many=None, partial=None, skip_validation=False):
         # prepare record error message instance (we wan't this instance to be the same as in
-        try:
-            result = super().load(data, many=many, partial=partial)
-            ret = dict(
-                data=self.validate_dynamic_fields(result, data),
-                errors= OrderedDict()
-            )
-        except ValidationError as err:
-            ret = { errors: err.messages, result: {} }
-
-        return ret
+        result = super().load(data, many=many, partial=partial)
+        return dict(
+            data=self.validate_dynamic_fields(result, data),
+            errors= OrderedDict()
+        )
 
     def validate_dynamic_fields(self, validated_data, initial_data, skip_validation=False):
         """
